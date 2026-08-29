@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sealord | القائمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Markazi+Text:wght@500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B2233;
+    --bg-panel:#12303F;
+    --bg-panel-alt:#163846;
+    --accent-gold:#C9A24B;
+    --accent-gold-soft:#E3C97A;
+    --foam:#F4F7F5;
+    --foam-dim:#AEC0C3;
+    --coral:#E2725B;
+    --seafoam:#5FA79B;
+    --radius:14px;
+    --font-display-en:'Fraunces', serif;
+    --font-body-en:'Inter', sans-serif;
+    --font-display-ar:'Markazi Text', serif;
+    --font-body-ar:'Tajawal', sans-serif;
+  }
+  html[lang="ar"]{ --font-display:var(--font-display-ar); --font-body:var(--font-body-ar); }
+  html[lang="en"]{ --font-display:var(--font-display-en); --font-body:var(--font-body-en); }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--bg-deep); color:var(--foam); font-family:var(--font-body); min-height:100%; }
+  body{ padding-bottom:96px; }
+
+  header.top{
+    position:sticky; top:0; z-index:30;
+    background:linear-gradient(180deg,#0B2233 0%, #0E2A3C 100%);
+    padding:18px 20px 26px;
+    text-align:center;
+  }
+  header.top .brand{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.9rem;
+    letter-spacing:.06em;
+    color:var(--foam);
+    margin:0;
+  }
+  header.top .tagline{
+    font-size:.78rem;
+    color:var(--accent-gold-soft);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    margin-top:4px;
+  }
+  .lang-toggle{
+    position:absolute; top:16px; inset-inline-end:16px;
+    background:rgba(244,247,245,.08);
+    border:1px solid rgba(244,247,245,.25);
+    color:var(--foam);
+    border-radius:999px;
+    padding:6px 14px;
+    font-size:.78rem;
+    font-family:var(--font-body-en);
+    letter-spacing:.05em;
+    cursor:pointer;
+  }
+  .wave{
+    display:block; width:100%; height:20px; margin-top:14px;
+  }
+  .wave path{ stroke:var(--accent-gold); stroke-width:1.4; fill:none; opacity:.75; }
+  @media (prefers-reduced-motion: no-preference){
+    .wave path{ animation: waveShift 6s ease-in-out infinite alternate; }
+  }
+  @keyframes waveShift{ from{ transform:translateX(0);} to{ transform:translateX(-14px);} }
+
+  .table-banner{
+    text-align:center; font-size:.82rem; color:var(--foam-dim); padding:6px 20px 0;
+  }
+
+  nav.categories{
+    position:sticky; top:0; z-index:20;
+    display:flex; gap:8px; overflow-x:auto;
+    padding:12px 16px; background:var(--bg-deep);
+    border-bottom:1px solid rgba(244,247,245,.08);
+    scrollbar-width:none;
+  }
+  nav.categories::-webkit-scrollbar{ display:none; }
+  .cat-pill{
+    flex:0 0 auto; padding:8px 16px; border-radius:999px;
+    background:var(--bg-panel); color:var(--foam-dim);
+    font-size:.85rem; font-family:var(--font-body); white-space:nowrap;
+    border:1px solid transparent; cursor:pointer;
+  }
+  .cat-pill.active{ background:var(--accent-gold); color:#12303F; font-weight:600; border-color:var(--accent-gold); }
+
+  main{ padding:16px; max-width:640px; margin:0 auto; }
+
+  .state-msg{ text-align:center; color:var(--foam-dim); padding:60px 20px; font-size:.95rem; line-height:1.8; }
+
+  .item-card{
+    display:flex; gap:12px; background:var(--bg-panel);
+    border-radius:var(--radius); padding:12px; margin-bottom:12px;
+    border-inline-start:3px solid var(--seafoam);
+    position:relative;
+  }
+  .item-card.sold-out{ opacity:.5; }
+  .item-img{
+    width:78px; height:78px; border-radius:10px; object-fit:cover;
+    background:linear-gradient(135deg,#163846,#0B2233);
+    flex:0 0 auto;
+  }
+  .item-body{ flex:1; min-width:0; }
+  .item-top{ display:flex; justify-content:space-between; gap:8px; align-items:flex-start; }
+  .item-name{ font-family:var(--font-display); font-size:1.05rem; font-weight:600; margin:0; color:var(--foam); }
+  .item-price{ font-family:var(--font-body); color:var(--accent-gold-soft); font-weight:600; white-space:nowrap; }
+  .sold-badge{
+    display:inline-block; margin-top:4px; font-size:.72rem; color:var(--coral);
+    border:1px solid var(--coral); border-radius:6px; padding:1px 8px;
+  }
+  .item-controls{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; gap:8px; }
+  .note-toggle{
+    background:none; border:none; color:var(--seafoam); font-size:.8rem;
+    cursor:pointer; padding:0; text-decoration:underline;
+  }
+  .note-input{
+    width:100%; margin-top:6px; background:var(--bg-panel-alt); border:1px solid rgba(244,247,245,.15);
+    border-radius:8px; color:var(--foam); padding:6px 10px; font-size:.82rem; font-family:var(--font-body);
+    display:none;
+  }
+  .note-input.open{ display:block; }
+  .qty-stepper{ display:flex; align-items:center; gap:10px; background:var(--bg-panel-alt); border-radius:999px; padding:4px 10px; }
+  .qty-stepper button{
+    width:24px; height:24px; border-radius:50%; border:none; background:var(--accent-gold); color:#12303F;
+    font-size:1rem; font-weight:700; cursor:pointer; line-height:1;
+  }
+  .qty-stepper button:disabled{ opacity:.3; cursor:not-allowed; }
+  .qty-val{ min-width:16px; text-align:center; font-size:.9rem; }
+
+  .float-bar{
+    position:fixed; bottom:0; inset-inline:0; z-index:40;
+    display:flex; gap:10px; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(0deg,#0B2233 60%, transparent);
+  }
+  .btn{
+    flex:1; border:none; border-radius:999px; padding:13px 14px; font-size:.92rem;
+    font-family:var(--font-body); font-weight:600; cursor:pointer;
+  }
+  .btn-outline{ background:transparent; border:1.5px solid var(--foam); color:var(--foam); }
+  .btn-gold{ background:var(--accent-gold); color:#12303F; }
+  .btn-gold[disabled]{ opacity:.4; }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(6,16,24,.6); z-index:50;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .overlay.open{ display:flex; }
+  .sheet{
+    width:100%; max-width:640px; max-height:82vh; overflow-y:auto;
+    background:var(--bg-panel-alt); border-radius:20px 20px 0 0; padding:20px;
+    padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  }
+  .sheet-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .sheet-header h2{ font-family:var(--font-display); margin:0; font-size:1.2rem; }
+  .close-btn{ background:none; border:none; color:var(--foam-dim); font-size:1.4rem; cursor:pointer; line-height:1; }
+  .cart-row{ display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid rgba(244,247,245,.08); }
+  .cart-row .info{ flex:1; }
+  .cart-row .name{ font-weight:600; }
+  .cart-row .note{ font-size:.78rem; color:var(--foam-dim); margin-top:2px; }
+  .cart-row .remove{ background:none; border:none; color:var(--coral); font-size:.8rem; cursor:pointer; }
+  textarea.general-note{
+    width:100%; margin-top:14px; background:var(--bg-panel); border:1px solid rgba(244,247,245,.15);
+    border-radius:10px; color:var(--foam); padding:10px; font-family:var(--font-body); font-size:.88rem;
+    min-height:60px; resize:vertical;
+  }
+  .cart-total{ display:flex; justify-content:space-between; font-weight:700; margin:14px 0; font-size:1.05rem; }
+
+  .toast{
+    position:fixed; bottom:100px; inset-inline:0; margin:0 auto; width:fit-content; max-width:88vw;
+    background:var(--seafoam); color:#0B2233; padding:10px 20px; border-radius:999px;
+    font-size:.85rem; font-weight:600; z-index:60; opacity:0; transition:opacity .3s ease;
+    pointer-events:none;
+  }
+  .toast.show{ opacity:1; }
+
+  .table-gate{
+    position:fixed; inset:0; background:var(--bg-deep); z-index:70;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .table-gate.hidden{ display:none; }
+  .gate-box{ max-width:340px; text-align:center; }
+  .gate-box h2{ font-family:var(--font-display); font-size:1.4rem; margin-bottom:8px; }
+  .gate-box p{ color:var(--foam-dim); font-size:.9rem; margin-bottom:18px; line-height:1.7; }
+  .gate-box input{
+    width:100%; padding:12px; border-radius:10px; border:1px solid rgba(244,247,245,.2);
+    background:var(--bg-panel); color:var(--foam); text-align:center; font-size:1rem; margin-bottom:10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="table-gate" id="tableGate">
+  <div class="gate-box">
+    <h2 data-t="gateTitle">امسح رمز QR الموجود على طاولتك</h2>
+    <p data-t="gateDesc">ما قدرنا نتعرف على رقم الطاولة تلقائياً. إذا بتجرب الصفحة، فيك تدخل رقم الطاولة يدوياً بالأسفل.</p>
+    <input type="number" id="manualTable" placeholder="رقم الطاولة" data-tph="رقم الطاولة">
+    <button class="btn btn-gold" style="width:100%" onclick="app.confirmManualTable()" data-t="gateBtn">متابعة</button>
+  </div>
+</div>
+
+<header class="top">
+  <button class="lang-toggle" onclick="app.toggleLang()" id="langBtn">EN</button>
+  <h1 class="brand">SEALORD</h1>
+  <div class="tagline" data-t="tagline">Fresh From The Sea</div>
+  <svg class="wave" viewBox="0 0 300 20" preserveAspectRatio="none">
+    <path d="M0 10 Q 25 0, 50 10 T 100 10 T 150 10 T 200 10 T 250 10 T 300 10"/>
+  </svg>
+  <div class="table-banner" id="tableBanner"></div>
+</header>
+
+<nav class="categories" id="categories"></nav>
+
+<main id="menuRoot">
+  <div class="state-msg" data-t="loading">عم نجهز المنيو...</div>
+</main>
+
+<div class="float-bar">
+  <button class="btn btn-outline" onclick="app.requestBill()" data-t="billBtn">🧾 طلب الفاتورة</button>
+  <button class="btn btn-gold" id="cartBtn" onclick="app.openCart()" data-t="cartBtn">🛒 السلة</button>
+</div>
+
+<div class="overlay" id="cartOverlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 data-t="cartTitle">طلبيتك</h2>
+      <button class="close-btn" onclick="app.closeCart()">×</button>
+    </div>
+    <div id="cartItems"></div>
+    <textarea class="general-note" id="generalNote" data-tph="ملاحظة عامة على الطلبية (اختياري)" placeholder="ملاحظة عامة على الطلبية (اختياري)"></textarea>
+    <div class="cart-total">
+      <span data-t="totalLabel">المجموع</span>
+      <span id="cartTotal">0$</span>
+    </div>
+    <button class="btn btn-gold" style="width:100%" id="sendOrderBtn" onclick="app.submitOrder()" data-t="sendBtn">إرسال الطلب</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONFIG = {
+  GET_MENU_URL: 'https://n8n.srv1748016.hstgr.cloud/webhook/get-menu',
+  ORDER_URL: 'https://n8n.srv1748016.hstgr.cloud/webhook/restaurant-order'
+};
+
+const STRINGS = {
+  ar: {
+    tagline: 'طازج من البحر', loading: 'عم نجهز المنيو...', empty: 'لا يوجد أصناف متوفرة حالياً',
+    error: 'صار في مشكلة بتحميل المنيو، حاول تحدث الصفحة', billBtn: '🧾 طلب الفاتورة', cartBtn: '🛒 السلة',
+    cartTitle: 'طلبيتك', totalLabel: 'المجموع', sendBtn: 'إرسال الطلب', emptyCart: 'السلة فاضية لهلق',
+    addNote: '+ ملاحظة', soldOut: 'غير متوفر حالياً', orderSent: 'تم إرسال طلبك بنجاح!',
+    billSent: 'تم إرسال طلب الفاتورة، شكراً!', orderError: 'صار خطأ، حاول كمان مرة',
+    gateTitle: 'امسح رمز QR الموجود على طاولتك', gateDesc: 'ما قدرنا نتعرف على رقم الطاولة تلقائياً. إذا بتجرب الصفحة، فيك تدخل رقم الطاولة يدوياً بالأسفل.',
+    gateBtn: 'متابعة', tableLabel: 'طاولة رقم', tablePh: 'رقم الطاولة'
+  },
+  en: {
+    tagline: 'Fresh From The Sea', loading: 'Loading the menu...', empty: 'No items available right now',
+    error: 'Could not load the menu, please refresh', billBtn: '🧾 Request Bill', cartBtn: '🛒 Cart',
+    cartTitle: 'Your Order', totalLabel: 'Total', sendBtn: 'Send Order', emptyCart: 'Your cart is empty',
+    addNote: '+ Note', soldOut: 'Sold out', orderSent: 'Your order has been sent!',
+    billSent: 'Bill request sent, thank you!', orderError: 'Something went wrong, please try again',
+    gateTitle: 'Scan the QR code on your table', gateDesc: "We couldn't detect your table automatically. If you're just testing, enter a table number below.",
+    gateBtn: 'Continue', tableLabel: 'Table', tablePh: 'Table number'
+  }
+};
+
+const state = {
+  lang: 'ar',
+  table: null,
+  items: [],
+  categories: [],
+  activeCategory: 'all',
+  cart: {}
+};
+
+const app = {
+  init(){
+    const params = new URLSearchParams(window.location.search);
+    const tableParam = params.get('table');
+    if (tableParam) {
+      state.table = tableParam;
+      document.getElementById('tableGate').classList.add('hidden');
+      this.loadCart();
+      this.fetchMenu();
+    } else {
+      document.getElementById('tableGate').classList.remove('hidden');
+    }
+    this.renderStrings();
+  },
+
+  confirmManualTable(){
+    const val = document.getElementById('manualTable').value.trim();
+    if(!val) return;
+    state.table = val;
+    document.getElementById('tableGate').classList.add('hidden');
+    this.loadCart();
+    this.fetchMenu();
+  },
+
+  t(key){ return STRINGS[state.lang][key]; },
+
+  toggleLang(){
+    state.lang = state.lang === 'ar' ? 'en' : 'ar';
+    document.documentElement.lang = state.lang;
+    document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+    document.getElementById('langBtn').textContent = state.lang === 'ar' ? 'EN' : 'AR';
+    this.renderStrings();
+    this.renderCategories();
+    this.renderItems();
+    this.renderCart();
+  },
+
+  renderStrings(){
+    document.querySelectorAll('[data-t]').forEach(el => {
+      const key = el.getAttribute('data-t');
+      if (STRINGS[state.lang][key]) el.textContent = STRINGS[state.lang][key];
+    });
+    document.querySelectorAll('[data-tph]').forEach(el => {
+      const key = el.getAttribute('placeholder') ? null : null;
+    });
+    document.getElementById('manualTable').placeholder = this.t('tablePh');
+    document.getElementById('generalNote').placeholder = state.lang === 'ar' ? 'ملاحظة عامة على الطلبية (اختياري)' : 'General note for the order (optional)';
+    if (state.table) {
+      document.getElementById('tableBanner').textContent = `${this.t('tableLabel')} ${state.table}`;
+    }
+  },
+
+  async fetchMenu(){
+    const root = document.getElementById('menuRoot');
+    try {
+      const res = await fetch(CONFIG.GET_MENU_URL);
+      if (!res.ok) throw new Error('bad response');
+      const data = await res.json();
+      state.items = Array.isArray(data) ? data : [];
+      const catsSeen = new Map();
+      state.items.forEach(it => {
+        const key = it.category_ar || it.category_en || 'other';
+        if (!catsSeen.has(key)) catsSeen.set(key, { ar: it.category_ar, en: it.category_en });
+      });
+      state.categories = Array.from(catsSeen.values());
+      this.renderCategories();
+      this.renderItems();
+    } catch(e) {
+      root.innerHTML = `<div class="state-msg">${this.t('error')}</div>`;
+    }
+  },
+
+  renderCategories(){
+    const nav = document.getElementById('categories');
+    if (!state.categories.length) { nav.innerHTML = ''; return; }
+    let html = `<button class="cat-pill ${state.activeCategory==='all'?'active':''}" onclick="app.setCategory('all')">${state.lang==='ar'?'الكل':'All'}</button>`;
+    state.categories.forEach(cat => {
+      const label = state.lang === 'ar' ? (cat.ar || cat.en) : (cat.en || cat.ar);
+      const key = cat.ar || cat.en;
+      html += `<button class="cat-pill ${state.activeCategory===key?'active':''}" onclick="app.setCategory('${key.replace(/'/g,"\\'")}')">${label}</button>`;
+    });
+    nav.innerHTML = html;
+  },
+
+  setCategory(key){
+    state.activeCategory = key;
+    this.renderCategories();
+    this.renderItems();
+  },
+
+  renderItems(){
+    const root = document.getElementById('menuRoot');
+    if (!state.items.length) {
+      root.innerHTML = `<div class="state-msg">${this.t('empty')}</div>`;
+      return;
+    }
+    const filtered = state.activeCategory === 'all'
+      ? state.items
+      : state.items.filter(it => (it.category_ar === state.activeCategory || it.category_en === state.activeCategory));
+
+    root.innerHTML = filtered.map(it => this.renderItemCard(it)).join('');
+  },
+
+  isAvailable(it){
+    return it.available === true || it.available === 'TRUE' || it.available === 'true';
+  },
+
+  renderItemCard(it){
+    const name = state.lang === 'ar' ? (it.name_ar || it.name_en) : (it.name_en || it.name_ar);
+    const available = this.isAvailable(it);
+    const cartEntry = state.cart[it.id] || { qty: 0, note: '' };
+    const img = it.image_url
+      ? `<img class="item-img" src="${it.image_url}" alt="${name}" loading="lazy">`
+      : `<div class="item-img"></div>`;
+    return `
+      <div class="item-card ${available ? '' : 'sold-out'}">
+        ${img}
+        <div class="item-body">
+          <div class="item-top">
+            <p class="item-name">${name}</p>
+            <span class="item-price">${it.price}$</span>
+          </div>
+          ${available ? '' : `<span class="sold-badge">${this.t('soldOut')}</span>`}
+          ${available ? `
+          <button class="note-toggle" onclick="app.toggleNote('${it.id}')" id="noteToggle-${it.id}">${cartEntry.note ? cartEntry.note : this.t('addNote')}</button>
+          <input class="note-input" id="noteInput-${it.id}" value="${cartEntry.note || ''}"
+                 oninput="app.setNote('${it.id}', this.value)" placeholder="${state.lang==='ar'?'مثال: بدون بصل':'e.g. no onion'}">
+          <div class="item-controls">
+            <div class="qty-stepper">
+              <button onclick="app.changeQty('${it.id}', -1)" ${cartEntry.qty<=0?'disabled':''}>−</button>
+              <span class="qty-val" id="qty-${it.id}">${cartEntry.qty}</span>
+              <button onclick="app.changeQty('${it.id}', 1)">+</button>
+            </div>
+          </div>` : ''}
+        </div>
+      </div>`;
+  },
+
+  toggleNote(id){
+    const input = document.getElementById(`noteInput-${id}`);
+    input.classList.toggle('open');
+    if (input.classList.contains('open')) input.focus();
+  },
+
+  setNote(id, value){
+    if (!state.cart[id]) state.cart[id] = { qty: 0, note: '' };
+    state.cart[id].note = value;
+    const item = state.items.find(i => String(i.id) === String(id));
+    document.getElementById(`noteToggle-${id}`).textContent = value ? value : this.t('addNote');
+    this.saveCart();
+  },
+
+  changeQty(id, delta){
+    if (!state.cart[id]) state.cart[id] = { qty: 0, note: '' };
+    state.cart[id].qty = Math.max(0, state.cart[id].qty + delta);
+    if (state.cart[id].qty === 0) delete state.cart[id];
+    document.getElementById(`qty-${id}`).textContent = state.cart[id] ? state.cart[id].qty : 0;
+    this.updateCartButton();
+    this.saveCart();
+  },
+
+  cartCount(){
+    return Object.values(state.cart).reduce((s,c) => s + c.qty, 0);
+  },
+
+  cartTotal(){
+    return Object.entries(state.cart).reduce((sum, [id, c]) => {
+      const item = state.items.find(i => String(i.id) === String(id));
+      return sum + (item ? item.price * c.qty : 0);
+    }, 0);
+  },
+
+  updateCartButton(){
+    const count = this.cartCount();
+    const total = this.cartTotal();
+    document.getElementById('cartBtn').textContent = `🛒 ${this.t('cartBtn').replace(/🛒\s?/,'')} (${count}) · ${total}$`;
+  },
+
+  openCart(){
+    this.renderCart();
+    document.getElementById('cartOverlay').classList.add('open');
+  },
+  closeCart(){
+    document.getElementById('cartOverlay').classList.remove('open');
+  },
+
+  renderCart(){
+    const container = document.getElementById('cartItems');
+    const entries = Object.entries(state.cart);
+    if (!entries.length) {
+      container.innerHTML = `<div class="state-msg" style="padding:24px 0;">${this.t('emptyCart')}</div>`;
+    } else {
+      container.innerHTML = entries.map(([id, c]) => {
+        const item = state.items.find(i => String(i.id) === String(id));
+        if (!item) return '';
+        const name = state.lang === 'ar' ? (item.name_ar || item.name_en) : (item.name_en || item.name_ar);
+        return `
+          <div class="cart-row">
+            <div class="info">
+              <div class="name">${name} × ${c.qty}</div>
+              ${c.note ? `<div class="note">${c.note}</div>` : ''}
+            </div>
+            <div>
+              <div>${item.price * c.qty}$</div>
+              <button class="remove" onclick="app.removeFromCart('${id}')">${state.lang==='ar'?'حذف':'Remove'}</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+    document.getElementById('cartTotal').textContent = `${this.cartTotal()}$`;
+    this.updateCartButton();
+  },
+
+  removeFromCart(id){
+    delete state.cart[id];
+    this.renderCart();
+    this.renderItems();
+    this.saveCart();
+  },
+
+  saveCart(){
+    if (!state.table) return;
+    try { localStorage.setItem(`sealord_cart_${state.table}`, JSON.stringify(state.cart)); } catch(e){}
+  },
+  loadCart(){
+    if (!state.table) return;
+    try {
+      const raw = localStorage.getItem(`sealord_cart_${state.table}`);
+      if (raw) state.cart = JSON.parse(raw);
+    } catch(e){}
+  },
+
+  showToast(msg){
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2600);
+  },
+
+  async submitOrder(){
+    const entries = Object.entries(state.cart);
+    if (!entries.length) return;
+    const items = entries.map(([id, c]) => {
+      const item = state.items.find(i => String(i.id) === String(id));
+      return {
+        name_ar: item.name_ar, name_en: item.name_en,
+        qty: c.qty, price: item.price, note: c.note || ''
+      };
+    });
+    const payload = {
+      type: 'order',
+      table: state.table,
+      items,
+      notes: document.getElementById('generalNote').value || ''
+    };
+    const btn = document.getElementById('sendOrderBtn');
+    btn.disabled = true;
+    try {
+      await fetch(CONFIG.ORDER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      state.cart = {};
+      this.saveCart();
+      document.getElementById('generalNote').value = '';
+      this.closeCart();
+      this.renderItems();
+      this.showToast(this.t('orderSent'));
+    } catch(e) {
+      this.showToast(this.t('orderError'));
+    } finally {
+      btn.disabled = false;
+    }
+  },
+
+  async requestBill(){
+    if (!state.table) return;
+    try {
+      await fetch(CONFIG.ORDER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'bill_request', table: state.table })
+      });
+      this.showToast(this.t('billSent'));
+    } catch(e) {
+      this.showToast(this.t('orderError'));
+    }
+  }
+};
+
+app.init();
+</script>
+</body>
+</html>
