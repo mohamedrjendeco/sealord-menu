@@ -623,6 +623,7 @@ const app = {
       const item = state.items.find(i => String(i.id) === String(id));
       return {
         name_ar: item.name_ar, name_en: item.name_en,
+        category_ar: item.category_ar, category_en: item.category_en,
         qty: c.qty, price: item.price, note: c.note || ''
       };
     });
