@@ -174,6 +174,17 @@
   }
   .cart-total{ display:flex; justify-content:space-between; font-weight:700; margin:14px 0; font-size:1.05rem; }
 
+  .detail-overlay{
+    position:fixed; inset:0; background:rgba(6,16,24,.6);
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+    z-index:55; display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .detail-overlay.open{ display:flex; }
+  .detail-card{
+    width:100%; max-width:320px; max-height:78vh; overflow-y:auto;
+    background:var(--bg-panel-alt); border-radius:20px; padding:20px;
+  }
+
   .toast{
     position:fixed; bottom:100px; inset-inline:0; margin:0 auto; width:fit-content; max-width:88vw;
     background:var(--seafoam); color:#0B2233; padding:10px 20px; border-radius:999px;
@@ -261,6 +272,10 @@
   </div>
 </div>
 
+<div class="detail-overlay" id="itemDetailOverlay" onclick="if(event.target===this) app.closeItemDetail()">
+  <div class="detail-card" id="itemDetailContent"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -280,7 +295,7 @@ const STRINGS = {
     addNote: '+ ملاحظة', soldOut: 'غير متوفر حالياً', orderSent: 'تم إرسال طلبك بنجاح!',
     billSent: 'تم إرسال طلب الفاتورة، شكراً!', orderError: 'صار خطأ، حاول كمان مرة',
     gateTitle: 'امسح رمز QR الموجود على طاولتك', gateDesc: 'ما قدرنا نتعرف على رقم الطاولة تلقائياً. إذا بتجرب الصفحة، فيك تدخل رقم الطاولة يدوياً بالأسفل.',
-    gateBtn: 'متابعة', tableLabel: 'طاولة رقم', tablePh: 'رقم الطاولة'
+    gateBtn: 'متابعة', tableLabel: 'طاولة رقم', tablePh: 'رقم الطاولة', ingredientsLabel: '🧾 المكونات:'
   },
   en: {
     tagline: 'Fresh From The Sea', loading: 'Loading the menu...', empty: 'No items available right now',
@@ -292,7 +307,7 @@ const STRINGS = {
     addNote: '+ Note', soldOut: 'Sold out', orderSent: 'Your order has been sent!',
     billSent: 'Bill request sent, thank you!', orderError: 'Something went wrong, please try again',
     gateTitle: 'Scan the QR code on your table', gateDesc: "We couldn't detect your table automatically. If you're just testing, enter a table number below.",
-    gateBtn: 'Continue', tableLabel: 'Table', tablePh: 'Table number'
+    gateBtn: 'Continue', tableLabel: 'Table', tablePh: 'Table number', ingredientsLabel: '🧾 Ingredients:'
   }
 };
 
@@ -421,9 +436,9 @@ const app = {
       : `<div class="item-img"></div>`;
     return `
       <div class="item-card ${available ? '' : 'sold-out'}">
-        ${img}
+        <div onclick="app.openItemDetail('${it.id}')" style="cursor:pointer;">${img}</div>
         <div class="item-body">
-          <div class="item-top">
+          <div class="item-top" onclick="app.openItemDetail('${it.id}')" style="cursor:pointer;">
             <p class="item-name">${name}</p>
             <span class="item-price">${it.price}$</span>
           </div>
@@ -443,6 +458,48 @@ const app = {
       </div>`;
   },
 
+  openItemDetail(id){
+    const it = state.items.find(i => String(i.id) === String(id));
+    if (!it) return;
+    const available = this.isAvailable(it);
+    const name = state.lang === 'ar' ? (it.name_ar || it.name_en) : (it.name_en || it.name_ar);
+    const ingredients = state.lang === 'ar' ? it.ingredients_ar : it.ingredients_en;
+    const cartEntry = state.cart[id] || { qty: 0, note: '' };
+    const img = it.image_url
+      ? `<img src="${it.image_url}" alt="${name}" style="display:block; width:130px; height:130px; margin:0 auto 14px; border-radius:14px; object-fit:cover;">`
+      : '';
+    const content = `
+      <div class="sheet-header">
+        <h2>${name}</h2>
+        <button class="close-btn" onclick="app.closeItemDetail()">×</button>
+      </div>
+      ${img}
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span class="item-price" style="font-size:1.25rem;">${it.price}$</span>
+        ${available ? '' : `<span class="sold-badge">${this.t('soldOut')}</span>`}
+      </div>
+      ${ingredients ? `
+        <div style="margin-bottom:16px;">
+          <strong style="font-size:.9rem;">${this.t('ingredientsLabel')}</strong>
+          <p style="color:var(--foam-dim); font-size:.88rem; margin-top:4px; line-height:1.6;">${ingredients}</p>
+        </div>` : ''}
+      ${available ? `
+        <textarea class="general-note" id="modal-note-${id}" oninput="app.setNote('${id}', this.value)"
+                  placeholder="${state.lang==='ar'?'مثال: بدون بصل':'e.g. no onion'}">${cartEntry.note || ''}</textarea>
+        <div class="qty-stepper" style="margin-top:14px; justify-content:center;">
+          <button id="modal-minus-${id}" onclick="app.changeQty('${id}', -1)" ${cartEntry.qty<=0?'disabled':''}>−</button>
+          <span class="qty-val" id="modal-qty-${id}">${cartEntry.qty}</span>
+          <button onclick="app.changeQty('${id}', 1)">+</button>
+        </div>` : ''}
+    `;
+    document.getElementById('itemDetailContent').innerHTML = content;
+    document.getElementById('itemDetailOverlay').classList.add('open');
+  },
+
+  closeItemDetail(){
+    document.getElementById('itemDetailOverlay').classList.remove('open');
+  },
+
   toggleNote(id){
     const input = document.getElementById(`noteInput-${id}`);
     input.classList.toggle('open');
@@ -452,8 +509,12 @@ const app = {
   setNote(id, value){
     if (!state.cart[id]) state.cart[id] = { qty: 0, note: '' };
     state.cart[id].note = value;
-    const item = state.items.find(i => String(i.id) === String(id));
-    document.getElementById(`noteToggle-${id}`).textContent = value ? value : this.t('addNote');
+    const toggleBtn = document.getElementById(`noteToggle-${id}`);
+    if (toggleBtn) toggleBtn.textContent = value ? value : this.t('addNote');
+    const cardInput = document.getElementById(`noteInput-${id}`);
+    if (cardInput && cardInput.value !== value) cardInput.value = value;
+    const modalInput = document.getElementById(`modal-note-${id}`);
+    if (modalInput && modalInput.value !== value) modalInput.value = value;
     this.saveCart();
   },
 
@@ -462,9 +523,17 @@ const app = {
     state.cart[id].qty = Math.max(0, state.cart[id].qty + delta);
     if (state.cart[id].qty === 0) delete state.cart[id];
     const currentQty = state.cart[id] ? state.cart[id].qty : 0;
-    document.getElementById(`qty-${id}`).textContent = currentQty;
+
+    const qtyEl = document.getElementById(`qty-${id}`);
+    if (qtyEl) qtyEl.textContent = currentQty;
     const minusBtn = document.getElementById(`minus-${id}`);
     if (minusBtn) minusBtn.disabled = currentQty <= 0;
+
+    const modalQtyEl = document.getElementById(`modal-qty-${id}`);
+    if (modalQtyEl) modalQtyEl.textContent = currentQty;
+    const modalMinusBtn = document.getElementById(`modal-minus-${id}`);
+    if (modalMinusBtn) modalMinusBtn.disabled = currentQty <= 0;
+
     this.updateCartButton();
     this.saveCart();
   },
